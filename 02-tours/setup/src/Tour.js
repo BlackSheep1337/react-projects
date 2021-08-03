@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
-const Tour = ({ image, name, price, info, handleDeleteTour, id }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
+export default function Tour({ name, image, info, price, removeTour, id }) {
+  const [openInfo, setOpenInfo] = useState(true);
   return (
     <article className="single-tour">
       <img src={ image } alt={ name } />
@@ -14,17 +13,15 @@ const Tour = ({ image, name, price, info, handleDeleteTour, id }) => {
           </h4>
         </div>
         <p>
-          { isOpen ? info : `${info.slice(0, 200)}...` }
-          <button onClick={() => setIsOpen((prev) => !prev)}>
-            {!isOpen ? ' read more' : ' show less'}
+          {!openInfo ? info : `${info.slice(0, 200)}...`}    
+          <button onClick={() => setOpenInfo(!openInfo)}>
+            {openInfo ? 'read more' : 'show less'}
           </button>
         </p>
-        <button onClick={ () => handleDeleteTour(id) } className="delete-btn">
-          delete tour
+        <button onClick={ () => removeTour(id) } className="delete-btn">
+            not interesting
         </button>
-      </footer>
+      </footer> 
     </article>
   )
-};
-
-export default Tour;
+}

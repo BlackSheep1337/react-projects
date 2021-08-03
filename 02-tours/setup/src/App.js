@@ -1,61 +1,63 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import Tour from './Tour';
 import Loading from './Loading';
-import Tours from './Tours'
-// ATTENTION!!!!!!!!!!
-// I SWITCHED TO PERMANENT DOMAIN
-const url = 'https://course-api.com/react-tours-project'
-function App() {
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const handleFetchData = async () => {
+export default function App() {
+  const [tours, setTours] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const url = 'https://course-api.com/react-tours-project'
+
+  const fetchTours = async ()  => {
     setIsLoading(true);
     try {
-      const { data } = await axios.get(url);
-      setData(data);
+      const response = await fetch(url);
+      const data = await response.json();
+      setTours(data);
       setIsLoading(false);
     } catch (error) {
-      setIsLoading(false);
       console.log(error);
+      setIsLoading(false);
     }
+  }
+  const removeTour = (id) => {
+    const newTour = tours.filter((tour) => tour.id !== id);
+    setTours(newTour);
   }
 
   useEffect(() => {
-    handleFetchData();
-  }, []);
-
-  const handleDeleteTour = (id) => {
-    const newData = data.filter((item) => item.id !== id);
-    setData(newData);
-  }
+    fetchTours();
+  }, [])
 
   if (isLoading) {
+    return <Loading />
+  }
+
+  if (!tours.length) {
     return (
       <main>
-        <Loading />
+        <section>
+          <div className="title">
+            <h2>No tours left</h2>
+            <button onClick={ () => fetchTours() } className="btn">
+            refresh
+          </button>
+          </div>  
+        </section>
       </main>
     )
   }
 
-  if (!data.length) {
-    return <main>
-      <main>
-        <div className='title'>
-          <h2>no tours left</h2>
-          <button className='btn' onClick={() => handleFetchData()}>
-            refresh
-          </button>
-        </div>
-      </main>
-    </main>
-  }
-    
   return (
     <main>
-      <Tours handleDeleteTour={ handleDeleteTour } data={ data } /> 
+      <section>
+        <div className="title">
+          <h2>Our Tours</h2>
+          <div className="underline"></div> 
+        </div>
+        <div>
+          {tours.map((tour) => <Tour removeTour={ removeTour } key={ tour.id } { ...tour} />)}
+        </div>
+      </section>
     </main>
-  );
+  )
 }
-
-export default App
